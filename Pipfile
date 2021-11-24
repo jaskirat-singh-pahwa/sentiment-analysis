@@ -9,8 +9,10 @@ nltk="*"
 torch="*"
 torchvision="*"
 torchtext="*"
+pytest="*"
 
 [dev-packages]
+pytest="*"
 
 [requires]
 python_version = "3.9"
