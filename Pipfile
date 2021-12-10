@@ -10,6 +10,8 @@ torch="*"
 torchvision="*"
 torchtext="*"
 pytest="*"
+selenium="*"
+bs4="*"
 
 [dev-packages]
 pytest="*"
