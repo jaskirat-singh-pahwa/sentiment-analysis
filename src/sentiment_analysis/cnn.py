@@ -81,6 +81,7 @@ class CNN(nn.Module):
 
         embedded = self.embedding(texts)
         embedded = embedded.unsqueeze(1)
+        # print(embedded.shape)
 
         conv_2d = [
             f.relu(conv_layer(embedded)).squeeze(3)

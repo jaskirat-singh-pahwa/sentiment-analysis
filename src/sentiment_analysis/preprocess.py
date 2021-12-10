@@ -5,8 +5,7 @@ import glob
 
 '''
 Datasets used:
-1.) Stanford movie reviews dataset: https://ai.stanford.edu/~amaas/data/sentiment/
-2.) Cornell movie reviews dataset: https://www.cs.cornell.edu/people/pabo/movie-review-data/
+-- Stanford movie reviews dataset: https://ai.stanford.edu/~amaas/data/sentiment/
 
 Sentiment Label:
 0 -> Negative
@@ -70,7 +69,7 @@ def remove_special_chars_from_words(review: str) -> List[str]:
     return reviews_without_special_chars
 
 
-def get_processed_data(data_path: str) -> List[Tuple[str, List[str]]]:
+def get_processed_data(data_path: str):
     raw_data = load_data(path=data_path)
     raw_data["sentiment"] = raw_data["sentiment"].apply(change_label_to_numeric)
     review_with_sentiment = get_review_and_sentiment_as_tuple(raw_data)

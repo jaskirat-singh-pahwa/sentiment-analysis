@@ -14,7 +14,7 @@ def get_accuracy(output, labels):
     return accuracy
 
 
-def train_model(model, num_epochs, data, loss_function, optimizer, model_name):
+def train_model(model, num_epochs, data, loss_function, optimizer, model_name, device):
     logger.info("Training model:")
     model.train()
 
@@ -44,6 +44,5 @@ def train_model(model, num_epochs, data, loss_function, optimizer, model_name):
                 100 * total_epoch_accuracy / len(data)
             )
         )
-
-    torch.save(model.state_dict(), "./" + model_name)
+    torch.save(model, "/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/models/" + model_name)
     logger.info("Model trained!")

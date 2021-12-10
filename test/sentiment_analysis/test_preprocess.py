@@ -1,4 +1,3 @@
-import pandas as pd
 from src.sentiment_analysis.preprocess import (
     remove_special_chars_from_words,
     get_processed_data
