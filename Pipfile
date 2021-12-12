@@ -12,6 +12,7 @@ torchtext="*"
 pytest="*"
 selenium="*"
 bs4="*"
+gensim="*"
 
 [dev-packages]
 pytest="*"

@@ -1,10 +1,8 @@
 import sys
 import torch
 import pandas as pd
-import random
 import torch.nn as nn
 import torch.optim as optim
-from typing import List, Tuple
 from torch.utils import data
 from src.sentiment_analysis.logger import get_logger
 from src.sentiment_analysis.args import parse_args
@@ -13,6 +11,8 @@ from src.sentiment_analysis.text_dataset import TextDataset
 from src.sentiment_analysis.cnn import CNN
 from src.sentiment_analysis.rnn import RNN
 from src.sentiment_analysis.train import train_model
+from src.sentiment_analysis.evaluate import evaluate_model
+from src.topic_modelling.modelling import get_topics
 
 pd.set_option("display.max_colwidth", 100)
 logger = get_logger("run")
@@ -110,6 +110,10 @@ def train_rnn(train_dataset, train_loader):
     )
 
 
+def get_evaluation(model, test_data, loss_function_for_evaluation):
+    return evaluate_model(model=model, data=test_data, loss_function=loss_function_for_evaluation, device=device)
+
+
 def run(argv) -> None:
     args = parse_args(argv)
     logger.info(args["movie_reviews"])
@@ -119,25 +123,77 @@ def run(argv) -> None:
     operation = args["operation"]
 
     processed_data = get_processed_data(data_path=movie_reviews_path)
-    logger.info(processed_data[0:2])
-    logger.info(len(processed_data))
+    # logger.info(processed_data[0:2])
+    logger.info(f"Length of data: {len(processed_data)}")
 
-    train_data, test_data = processed_data[0:35000] + processed_data[40000: 40000 + 5000], \
-                            processed_data[35000: 40000] + processed_data[40000 + 5000:]
+    train_data, test_data = processed_data[0:35000] + processed_data[40000: 45000], \
+                            processed_data[35000: 40000] + processed_data[45000:]
 
-    print(len(train_data), len(test_data))
-
-    # ds = TextDataset(train_data, 'train', threshold=10, max_len=150)
-    # print('Vocab size:', ds.vocab_size)
-    # text, label = ds[random.randint(0, len(ds))]
-    # print('Example text:', text)
-    # print('Example label:', label)
+    print(f"Length of Training data: {len(train_data)}, Length of Test data: {len(test_data)}")
 
     train_dataset, train_loader, test_dataset, test_loader = \
         get_train_test_dataset(train_data=train_data, test_data=test_data)
 
-    train_cnn(train_dataset=train_dataset, train_loader=train_loader)
-    train_rnn(train_dataset=train_dataset, train_loader=train_loader)
+    if operation.lower() == "train":
+        train_cnn(train_dataset=train_dataset, train_loader=train_loader)
+        train_rnn(train_dataset=train_dataset, train_loader=train_loader)
+
+    elif operation.lower() == "test":
+        # rnn_model = torch.load("/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/models/rnn.pt")
+        # cnn_model = torch.load("/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/models/cnn.pt")
+        # rnn_predictions, rnn_overall_accuracy, rnn_overall_loss = \
+        #     get_evaluation(
+        #         model=rnn_model,
+        #         test_data=test_loader,
+        #         loss_function_for_evaluation=nn.CrossEntropyLoss().to(device)
+        #     )
+        # cnn_predictions, cnn_overall_accuracy, cnn_overall_loss = \
+        #     get_evaluation(
+        #         model=cnn_model,
+        #         test_data=test_loader,
+        #         loss_function_for_evaluation=nn.CrossEntropyLoss().to(device)
+        #     )
+        #
+        # print(f"RNN test accuracy: {rnn_overall_accuracy / 100}, CNN test accuracy: {cnn_overall_accuracy / 100}")
+        # print(f"RNN test loss: {rnn_overall_loss}, CNN test loss: {cnn_overall_loss}")
+        #
+        # # Evaluation on scraped IMDB reviews
+        # scraped_data_path = "/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/src/scraping/data/"
+        # processed_scraped_data = get_processed_data(data_path=scraped_data_path)
+        # print(len(processed_scraped_data))
+        # train_scraped_dataset, train_scraped_loader, test_scraped_dataset, test_scraped_loader = \
+        #     get_train_test_dataset(train_data=processed_scraped_data, test_data=processed_scraped_data)
+        #
+        # rnn_scraped_predictions, rnn_scraped_overall_accuracy, rnn_scraped_overall_loss = \
+        #     get_evaluation(
+        #         model=rnn_model,
+        #         test_data=test_scraped_loader,
+        #         loss_function_for_evaluation=nn.CrossEntropyLoss().to(device)
+        #     )
+        #
+        # cnn_scraped_predictions, cnn_scraped_overall_accuracy, cnn_scraped_overall_loss = \
+        #     get_evaluation(
+        #         model=cnn_model,
+        #         test_data=test_scraped_loader,
+        #         loss_function_for_evaluation=nn.CrossEntropyLoss().to(device)
+        #     )
+        #
+        # print(f"RNN test accuracy on scraped data: {rnn_scraped_overall_accuracy / 100}, "
+        #       f"CNN test accuracy on scraped data: {cnn_scraped_overall_accuracy / 100}")
+        # print(f"RNN test loss on scraped data: {rnn_scraped_overall_loss}, "
+        #       f"CNN test loss on scraped data: {cnn_scraped_overall_loss}")
+
+        # Topic modelling
+        print("\n\nTop 20 topics for Positive reviews: ")
+        get_topics(file_path="/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/src/topic_modelling/data"
+                             "/positive.csv")
+
+        print("\n\nTop 20 topics for Negative reviews: ")
+        get_topics(file_path="/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/src/topic_modelling/data"
+                             "/negative.csv")
+
+    else:
+        pass
 
 
 if __name__ == "__main__":
