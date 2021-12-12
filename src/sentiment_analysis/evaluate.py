@@ -1,9 +1,7 @@
 import torch
-from src.sentiment_analysis.constants import Constants
 from src.sentiment_analysis.logger import get_logger
 
 logger = get_logger(name="evaluate")
-device = Constants.device
 
 
 def get_accuracy(output, labels):
@@ -14,7 +12,7 @@ def get_accuracy(output, labels):
     return accuracy
 
 
-def evaluate_model(model, data, loss_function):
+def evaluate_model(model, data, loss_function, device):
     logger.info("Evaluating model performance on the test data: ")
     model.eval()
 

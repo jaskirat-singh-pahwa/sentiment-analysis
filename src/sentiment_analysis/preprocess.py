@@ -26,6 +26,16 @@ def load_data(path: str) -> pd.DataFrame:
     return reviews
 
 
+def separate_positive_and_negative_reviews(dataset):
+    positive = dataset.loc[dataset["sentiment"] == "positive"]
+    negative = dataset.loc[dataset["sentiment"] == "negative"]
+
+    positive.to_csv("/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/src/topic_modelling/data/positive"
+                    ".csv", index=False)
+    negative.to_csv("/Users/jaskirat/Illinois/cs-410/TISProject/sentiment-analysis/src/topic_modelling/data/negative"
+                    ".csv", index=False)
+
+
 def change_label_to_numeric(sentiment: Union[str, int]) -> str:
     if not isinstance(sentiment, int):
         if sentiment.lower() == "positive":
@@ -71,6 +81,7 @@ def remove_special_chars_from_words(review: str) -> List[str]:
 
 def get_processed_data(data_path: str):
     raw_data = load_data(path=data_path)
+    # separate_positive_and_negative_reviews(dataset=raw_data)
     raw_data["sentiment"] = raw_data["sentiment"].apply(change_label_to_numeric)
     review_with_sentiment = get_review_and_sentiment_as_tuple(raw_data)
     cleaned_reviews = [
